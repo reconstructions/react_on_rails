@@ -45,3 +45,7 @@ gem "webpacker", "3.0.2"
 
 gem "equivalent-xml", github: "mbklein/equivalent-xml"
 gem "rainbow"
+
+group :development do
+  gem "listen"
+end

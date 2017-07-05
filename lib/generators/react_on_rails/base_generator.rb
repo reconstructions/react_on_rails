@@ -8,8 +8,11 @@ module ReactOnRails
   module Generators
     class BaseGenerator < Rails::Generators::Base
       include GeneratorHelper
+      include OptionHelper
       Rails::Generators.hide_namespace(namespace)
       source_root(File.expand_path("../templates", __FILE__))
+
+      define_name_option
 
       # --redux
       class_option :redux,
@@ -18,28 +21,42 @@ module ReactOnRails
                    desc: "Install Redux gems and Redux version of Hello World Example",
                    aliases: "-R"
 
-      def add_hello_world_route
-        route "get 'hello_world', to: 'hello_world#index'"
+      def add_example_page_route
+        route "get '#{example_page_path}', to: '#{example_page_path}#index'"
       end
 
       def create_react_directories
-        dirs = %w[components]
-        dirs.each { |name| empty_directory("app/javascript/bundles/HelloWorld/#{name}") }
+        create_client_directories "components", "containers", "startup"
       end
 
       def copy_base_files
         base_path = "base/base/"
-        base_files = %w[app/controllers/hello_world_controller.rb
-                        app/views/layouts/hello_world.html.erb
-                        config/initializers/react_on_rails.rb
-                        Procfile.dev
-                        Procfile.dev-server]
-        base_files.each { |file| copy_file("#{base_path}#{file}", file) }
+        base_files = %w[config/webpacker_lite.yml
+                        client/.babelrc
+                        client/REACT_ON_RAILS_CLIENT_README.md]
+        base_files.each do |file|
+          copy_file("#{base_path}#{file}", convert_filename_to_use_example_page_name(file))
+        end
       end
 
-      def add_base_gems_to_gemfile
-        gem "mini_racer", platforms: :ruby
-        run "bundle"
+      def template_base_files
+        base_path = "base/base/"
+        %w[app/controllers/hello_world_controller.rb
+           app/views/layouts/hello_world.html.erb
+           config/initializers/react_on_rails.rb
+           Procfile.dev
+           client/webpack.config.js
+           client/package.json].each do |file|
+          template("#{base_path}#{file}.tt", convert_filename_to_use_example_page_name(file))
+        end
+      end
+
+      def template_package_json
+        if dest_file_exists?("package.json")
+          add_yarn_postinstall_script_in_package_json
+        else
+          template("base/base/package.json", "package.json")
+        end
       end
 
       def add_yarn_dependencies
@@ -107,14 +124,14 @@ module ReactOnRails
 
                 foreman start -f Procfile.dev
 
-            - To turn on HMR, edit config/webpacker.yml and set HMR to true. Restart the rails server
-              and bin/webpack-dev-server. Or use Procfile.dev-server.
+            - Visit http://localhost:3000/#{example_page_path} and see your React On Rails app running!
 
             - To server render, change this line app/views/hello_world/index.html.erb to
               `prerender: true` to see server rendering (right click on page and select "view source").
 
                 <%= react_component("HelloWorldApp", props: @hello_world_props, prerender: true) %>
         MSG
+        GeneratorMessages.add_info(message)
       end
 
       def print_helpful_message

@@ -12,7 +12,10 @@ Usage:
   rails generate react_on_rails:install [options]
 
 Options:
-  -R, [--redux], [--no-redux]                      # Install Redux gems and Redux version of Hello World Example. Default: false
+  -E, [--example-page-name=EXAMPLE_PAGE_NAME]      # Name the example page EXAMPLE_PAGE_NAME
+                                                   # Default: HelloWorld
+  -R, [--redux], [--no-redux]                      # Install Redux gems and Redux version of Example Page. Default: false
+  -N, [--node], [--no-node]                        # Sets up node as a server rendering option. Default: false
       [--ignore-warnings], [--no-ignore-warnings]  # Skip warnings. Default: false
 
 Runtime options:
@@ -34,6 +37,9 @@ can pass the redux option if you'd like to have redux setup for you automaticall
 
 *******************************************************************************
 
+After running the generator, you will want to:
+
+    bundle && yarn
 
 Then you may run
 
@@ -61,4 +67,3 @@ You may also notice the `app/lib` folder. This is for any code that is common be
 If you have used the `--redux` generator option, you will notice the familiar additional redux folders in addition to the aforementioned folders. The Hello World example has also been modified to use Redux.
 
 Note the organizational paradigm of "bundles". These are like application domains and are used for grouping your code into webpack bundles, in case you decide to create different bundles for deployment. This is also useful for separating out logical parts of your application. The concept is that each bundle will have it's own Redux store. If you have code that you want to reuse across bundles, including components and reducers, place them under `/client/app/lib`.
-

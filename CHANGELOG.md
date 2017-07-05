@@ -6,7 +6,13 @@ Contributors: please follow the recommendations outlined at [keepachangelog.com]
 ## [Unreleased]
 Changes since last non-beta release.
 
-*Please add entries here for your pull requests that are not yet released.*
+### Added
+- Ability to specify generated example page name. For example: `rails generate
+  react_on_rails:install --example-page-name MainPage`.
+  [#869](https://github.com/shakacode/react_on_rails/pull/869) by
+  [ledestin](https://github.com/ledestin)
+
+*Please add entries here for your pull requests.*
 
 ### [10.1.1] - 2018-01-26
 #### Fixed

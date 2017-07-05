@@ -44,7 +44,7 @@ First be sure to run `rails -v` and check you are using Rails 5.1.3 or above. If
 cd <directory where you want to create your new Rails app>
 
 # any name you like for the rails app
-rails new test-react-on-rails --webpack=react 
+rails new test-react-on-rails --webpack=react
 
 cd test-react-on-rails
 ```
@@ -76,7 +76,12 @@ git add -A
 git commit -m "Initial commit"
 ```
 
-Install React on Rails: `rails generate react_on_rails:install` or `rails generate react_on_rails:install --redux`. You need to first git commit your files before running the generator, or else it will generate an error.
+update dependencies and generate empty app via `react_on_rails:install` or `react_on_rails:install --redux`.
+
+You can also specify name for the generated page with `react_on_rails:install
+--example-page-name MyApp`. It will affect URL path (`http://localhost:3000/my_app/`) and source code names (instead of HelloWorld things will be called MyApp).
+
+You need to first git commit your files before running the generator, or else it will generate an error.
 
 ```
 rails generate react_on_rails:install
@@ -100,7 +105,7 @@ In case you are running some custom setup with different IP or PORT you should a
 web: rails s -p 8080 -b 0.0.0.0
 ```
 
-Then visit https://your-shared-addr.c9users.io:8080/hello_world 
+Then visit https://your-shared-addr.c9users.io:8080/hello_world
 
 
 ## RubyMine
