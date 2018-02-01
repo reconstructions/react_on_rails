@@ -8,16 +8,26 @@ module ReactOnRails
   module Generators
     class InstallGenerator < Rails::Generators::Base
       include GeneratorHelper
+      include OptionHelper
 
       # fetch USAGE file for details generator description
       source_root(File.expand_path("../", __FILE__))
+
+      define_name_option
 
       # --redux
       class_option :redux,
                    type: :boolean,
                    default: false,
-                   desc: "Install Redux gems and Redux version of Hello World Example. Default: false",
+                   desc: "Install Redux gems and Redux version of Example Page. Default: false",
                    aliases: "-R"
+
+      # --redux
+      class_option :node,
+                   type: :boolean,
+                   default: false,
+                   desc: "Sets up node as a server rendering option. Default: false",
+                   aliases: "-N"
 
       # --ignore-warnings
       class_option :ignore_warnings,
@@ -46,11 +56,9 @@ module ReactOnRails
 
       def invoke_generators
         invoke "react_on_rails:base"
-        if options.redux?
-          invoke "react_on_rails:react_with_redux"
-        else
-          invoke "react_on_rails:react_no_redux"
-        end
+        invoke "react_on_rails:react_no_redux" unless options.redux?
+        invoke "react_on_rails:react_with_redux" if options.redux?
+        invoke "react_on_rails:node" if options.node?
       end
 
       # NOTE: other requirements for existing files such as .gitignore or application.

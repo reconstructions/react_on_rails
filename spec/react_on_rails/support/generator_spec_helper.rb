@@ -1,16 +1,12 @@
 # frozen_string_literal: true
 
-require_relative "../spec_helper"
 require_relative "../simplecov_helper"
-require "generator_spec/test_case"
-
+require_relative "../spec_helper"
+require "generator_spec" # let's us use Rails's generator testing helpers but with RSpec syntax
 Dir[File.expand_path("../../support/shared_examples", __FILE__) + "/*.rb"].each { |file| require file }
 generators_glob = File.expand_path("../../../../lib/generators/react_on_rails/*_generator.rb", __FILE__)
 Dir[generators_glob.to_s].each { |file| require file }
-
-# rubocop:disable Lint/UnneededDisable
-include ReactOnRails::Generators # rubocop:disable Style/MixinUsage
-# rubocop:enable Lint/UnneededDisable
+include ReactOnRails::Generators
 
 RSpec.configure do |config|
   config.after(:each) do
@@ -39,10 +35,9 @@ def simulate_existing_rails_files(options)
 end
 
 def simulate_npm_files(options)
-  return unless options.fetch(:package_json, false)
-
-  package_json = "package.json"
-  package_json_data = <<-JSON.strip_heredoc
+  if options.fetch(:package_json, false)
+    package_json = "client/package.json"
+    package_json_data = <<-JSON.strip_heredoc
       {
         "name": "foo",
         "private": true,
@@ -57,8 +52,21 @@ def simulate_npm_files(options)
         "devDependencies": {
         }
       }
-  JSON
-  simulate_existing_file(package_json, package_json_data)
+    JSON
+    simulate_existing_file(package_json, package_json_data)
+  end
+
+  return unless options.fetch(:webpack_client_base_config, false)
+  config = "client/webpack.config.js"
+  text = <<-TEXT
+  resolve: {
+    ...
+  },
+  plugins: [
+    ...
+  ]
+  TEXT
+  simulate_existing_file(config, text)
 end
 
 # Expects an array of strings, such as "--redux"
@@ -67,11 +75,7 @@ def run_generator_test_with_args(args, options = {})
   simulate_existing_rails_files(options)
   simulate_npm_files(options)
   yield if block_given?
-
-  Dir.chdir(destination_root) do
-    # WARNING: std out is swallowed from running the generator during tests
-    run_generator(args + ["--ignore-warnings"])
-  end
+  run_generator(args + ["--ignore-warnings"])
 end
 
 # Simulate having an existing file for cases where the generator needs to modify, not create, a file
